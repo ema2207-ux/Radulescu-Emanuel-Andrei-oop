@@ -1,7 +1,12 @@
-#include "Joc.h"
+    #include "Joc.h"
 #include <iostream>
 
-Joc::Joc(const std::string& nume) : numeJucator(nume), abandonat(false), ajutor(nullptr) {
+Joc::Joc(const std::string& nume)
+    : numeJucator(nume),
+      abandonat(false),
+      ajutor(nullptr),
+      statisticiCastiguri(nume),
+      statisticiRataSucces(nume) {
     Scor::afiseazaNumarJocuri();
 }
 
@@ -9,21 +14,26 @@ void Joc::afiseazaAjutor50_50(Intrebare& intrebare) {
     ajutor = new Ajutor50_50();
     ajutor->aplicaAjutor(intrebare);
     delete ajutor;
+    ajutor = nullptr;
 }
 
 void Joc::afiseazaAjutorSunaUnPrieten(Intrebare& intrebare) {
     ajutor = new AjutorSunaUnPrieten();
     ajutor->aplicaAjutor(intrebare);
     delete ajutor;
+    ajutor = nullptr;
 }
 
 void Joc::afiseazaAjutorIntreabaPublicul(Intrebare& intrebare) {
     ajutor = new AjutorIntreabaPublicul();
     ajutor->aplicaAjutor(intrebare);
     delete ajutor;
+    ajutor = nullptr;
 }
 
 void Joc::ruleaza() {
+    int intrebariCorecte = 0;
+
     for (int i = 0; i < 15; ++i) {
         Intrebare intrebare = intrebareManager.obtineIntrebare(i);
         std::cout << "\nIntrebare " << (i + 1) << ": " << intrebare.intrebare << std::endl;
@@ -55,6 +65,7 @@ void Joc::ruleaza() {
         if (raspunsUtilizator - 1 == intrebare.raspunsCorect) {
             std::cout << "Raspuns corect!" << std::endl;
             scor.adaugaPuncte();
+            intrebariCorecte++;
         } else {
             std::cout << "Raspuns gresit!" << std::endl;
             break;
@@ -71,9 +82,18 @@ void Joc::ruleaza() {
         }
     }
 
+    int castigFinal = scor.obtinePremiu();
+    double rataSucces = (intrebariCorecte / 15.0) * 100.0;
+
+    statisticiCastiguri.adaugaCastig(castigFinal);
+    statisticiRataSucces.adaugaCastig(rataSucces);
+
     if (!abandonat) {
         scor.afiseazaScorFinal();
     } else {
-        std::cout << "Ai abandonat jocul cu suma de: " << scor.obtinePremiu() << " RON\n";
+        std::cout << "Ai abandonat jocul cu suma de: " << castigFinal << " RON\n";
     }
+
+    statisticiCastiguri.afiseazaStatistici();
+    statisticiRataSucces.afiseazaStatistici();
 }
