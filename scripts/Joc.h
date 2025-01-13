@@ -4,6 +4,7 @@
 #include "IntrebareManager.h"
 #include "Scor.h"
 #include "Ajutor.h"
+#include "Statistici.h"
 #include <string>
 
 class Joc {
@@ -13,6 +14,8 @@ private:
     Scor scor;
     bool abandonat;
     Ajutor* ajutor;
+    Statistici<int> statisticiCastiguri;
+    Statistici<double> statisticiRataSucces;
 
 public:
     Joc(const std::string& nume);
